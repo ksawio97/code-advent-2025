@@ -55,6 +55,27 @@ int p1(const int rotations_count, Rotation rotations[rotations_count]) {
     return zero_result_count;
 }
 
+int p2(const int rotations_count, Rotation rotations[rotations_count]) {
+    int zero_result_count = 0;
+    int curr_val = 50;
+    for (int i = 0; i < rotations_count; i++) {
+        curr_val += rotations[i].dir * rotations[i].val;
+        // TODO fix counting logic:
+
+        // count while rotating 
+        if (curr_val < 0 && (curr_val % 100) != 0 && abs(curr_val) != rotations[i].val) {
+            zero_result_count++;
+        }
+        zero_result_count += abs(curr_val) / 100;
+
+        curr_val = ((curr_val % 100 + 100) % 100);
+        if (curr_val == 0) {
+            zero_result_count++;
+        }
+    }
+
+    return zero_result_count;
+}
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         fprintf(stderr, "You need to provide input file path\n");
@@ -66,7 +87,7 @@ int main(int argc, char *argv[]) {
     Rotation* rotations;
     int rotations_count = read_rotations(fh, &rotations);
     printf("P1: %d\n", p1(rotations_count, rotations));
+    printf("P2: %d\n", p2(rotations_count, rotations));
 
-    fclose(fh);
     return 1;
 }
