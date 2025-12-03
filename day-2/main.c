@@ -76,6 +76,38 @@ bool is_num_duplicate(long long num, const int digits_count) {
     return true;
 }
 
+// [from, to] range is inclusive
+long long cut_num(long long num, int from, int to, const int digits_count) {
+    int omit_digits = digits_count - to - 1;
+    int cut_size = to - from + 1;
+
+    return (long long)(num / pow(10, omit_digits)) % (long long)pow(10, cut_size);
+}
+
+bool is_made_by_sequence(long long num, const int digits_count) {
+    for (int seq_size = digits_count / 2; seq_size > 0; seq_size--) {
+        // can't be made by seq of this size
+        if (digits_count % seq_size != 0) {
+            continue;
+        }
+        
+        bool found_unique = false;
+        for (int start = 0; start < digits_count - seq_size; start += seq_size) {
+            const long long num1 = cut_num(num, start, start + seq_size - 1, digits_count), num2 = cut_num(num, start + seq_size, start + seq_size * 2 - 1, digits_count);
+            if (num1 != num2) {
+                found_unique = true;
+                break;
+            }    
+        }
+
+        if (!found_unique) {
+            return true;
+        } 
+    }
+
+    return false;
+}
+
 long long p1(const int ranges_count, Range ranges[ranges_count]) {
     long long sum = 0L;
     
@@ -88,6 +120,23 @@ long long p1(const int ranges_count, Range ranges[ranges_count]) {
             }
 
             if (is_num_duplicate(num, digits_count)) {
+                sum += num;
+            }
+        }
+    }
+
+    return sum;
+}
+
+long long p2(const int ranges_count, Range ranges[ranges_count]) {
+    long long sum = 0L;
+
+
+    for (int i = 0; i < ranges_count; i++) {
+        for (long long num = ranges[i].start; num < ranges[i].end + 1; num++) {
+            int digits_count = get_digits_count(num);
+
+            if (is_made_by_sequence(num, digits_count)) {
                 sum += num;
             }
         }
@@ -114,6 +163,7 @@ int main(int argc, char *argv[])
     const int ranges_count = read_ranges(fh, &ranges);
     
     printf("Part 1: %lld\n", p1(ranges_count, ranges));
+    printf("Part 2: %lld\n", p2(ranges_count, ranges));
 
     return 1;
 }
