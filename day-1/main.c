@@ -61,12 +61,13 @@ int p2(const int rotations_count, Rotation rotations[rotations_count]) {
     for (int i = 0; i < rotations_count; i++) {
         curr_val += rotations[i].dir * rotations[i].val;
         // TODO fix counting logic:
-
-        // count while rotating 
-        if (curr_val < 0 && (curr_val % 100) != 0 && abs(curr_val) != rotations[i].val) {
+        if (curr_val < 0 && curr_val - rotations[i].dir * rotations[i].val != 0) {
             zero_result_count++;
         }
-        zero_result_count += abs(curr_val) / 100;
+        // count while rotating
+        if (abs(curr_val) / 100 > 0) {
+            zero_result_count += abs(curr_val) / 100 - (((curr_val % 100 + 100) % 100) == 0);
+        }
 
         curr_val = ((curr_val % 100 + 100) % 100);
         if (curr_val == 0) {
