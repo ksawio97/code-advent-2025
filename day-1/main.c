@@ -60,7 +60,6 @@ int p2(const int rotations_count, Rotation rotations[rotations_count]) {
     int curr_val = 50;
     for (int i = 0; i < rotations_count; i++) {
         curr_val += rotations[i].dir * rotations[i].val;
-        // TODO fix counting logic:
         if (curr_val < 0 && curr_val - rotations[i].dir * rotations[i].val != 0) {
             zero_result_count++;
         }
@@ -84,7 +83,10 @@ int main(int argc, char *argv[]) {
     }
     char* in_data = argv[1];
     FILE* fh = fopen(in_data, "r+");
-    
+    if (fh == NULL) {
+        fprintf(stderr, "File read error\n");
+        return 0;
+    }    
     Rotation* rotations;
     int rotations_count = read_rotations(fh, &rotations);
     printf("P1: %d\n", p1(rotations_count, rotations));
