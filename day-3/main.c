@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define P2_NUMS_NEEDED 12
+
 int read_data(FILE* fh, int** nums, int* row_size) {
     int max_size = 1, size = 0;
     *nums = malloc(max_size * sizeof(int));
@@ -48,19 +50,35 @@ int find_biggest_index(const int n, int nums[n]) {
     return biggest_index;
 }
 
+
 int p1(const int size, const int row_size, int nums[size]) {
     int sum = 0;
 
     for (int r = 0; r < size; r += row_size) {
-        int first_index = find_biggest_index(row_size, nums + r);
-        // last digit is biggest, can't choose it bcs 2 digit is always bigger 
-        if (first_index == row_size - 1) {
-            first_index = find_biggest_index(row_size - 1, nums + r);
-        }
-
+        int first_index = find_biggest_index(row_size - 1, nums + r);
+        
         int second_index = find_biggest_index(row_size - first_index - 1, nums + r + first_index + 1);
 
         sum += nums[r + first_index] * 10 + nums[r + first_index + second_index + 1];
+    }
+    
+    return sum;
+}
+
+long long p2(const int size, const int row_size, int nums[size]) {
+    long long sum = 0;
+
+    for (int r = 0; r < size; r += row_size) {
+        long long val = 0;
+        int index = 0, start = r;
+        for (int i = 0; i < P2_NUMS_NEEDED; i++) {
+            index = find_biggest_index(row_size - (P2_NUMS_NEEDED - i - 1 /* right shift so we have other vals for later */) - index - 1, nums + start);
+            val = val * 10 + nums[start + index];
+            
+            start += index + 1; 
+        }
+        printf("Value: %lld\n", val);
+        sum += val;
     }
     
     return sum;
@@ -84,6 +102,6 @@ int main(int argc, char *argv[])
     int nums_count = read_data(fh, &nums, &row_size); 
 
     printf("Part 1: %d\n", p1(nums_count, row_size, nums));
-    // printf("Part 2: %lld\n", p2(ranges_count, ranges));
+    printf("Part 2: %lld\n", p2(nums_count, row_size, nums));
     return 1;
 }
